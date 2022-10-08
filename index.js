@@ -8,17 +8,23 @@ app.use(upload())
 app.use(express.static('public'))
 app.post('/send', (req, res) => {
     if (req.files) {
-        var file = req.files.file
-        var fileName = file.name
-        const date = new Date();
-        console.log('###########"' + fileName + '"::' + date.toString() + '#############')
-        file.mv('./upload/' + fileName, (err) => {
-            if (err) {
-                res.send(err)
-            } else {
-                res.redirect('/out.html')
-            }
+        var files = req.files.file
+        Object.keys(files).map( key => {
+            var file = files[key];
+            var date = new Date();
+            console.log('###########"' + file.name + '"::' + date.toString() + '#############')
+            file.mv('./upload/' + file.name, (err) => {
+                if (err) {
+                    res.send(err)
+                } else {
+                    date = new Date();
+                    console.log('###########"' + file.name + '"::' + date.toString() + '#############')
+                }
+            })
         })
+        res.redirect('/out.html')
+    } else {
+        res.redirect('/error.html')
     }
 });
 app.listen(5000, process.env.IPV4)
